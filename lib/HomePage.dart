@@ -4,11 +4,17 @@ import 'data.dart';
 import 'EditPage.dart';
 import 'main.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  @override
   Widget build(BuildContext context) {
+    TextEditingController controller = TextEditingController();
     final box = Hive.box<TaskEntity>(taskBoxName);
     final myThemeData = Theme.of(context);
     return Scaffold(
@@ -84,6 +90,10 @@ class HomeScreen extends StatelessWidget {
                           color: myThemeData.colorScheme.onPrimary,
                           borderRadius: BorderRadiusDirectional.circular(19)),
                       child: TextField(
+                        onChanged: (value) {
+                          setState(() {});
+                        },
+                        controller: controller,
                         decoration: InputDecoration(
                           hintText: 'Search tasks ...',
                           prefixIcon: Icon(
@@ -109,10 +119,18 @@ class HomeScreen extends StatelessWidget {
               child: ValueListenableBuilder<Box<TaskEntity>>(
                 valueListenable: box.listenable(),
                 builder: (context, box, child) {
-                  if (box.isNotEmpty) {
+                  final items;
+                  if (controller.text.isEmpty) {
+                    items = box.values.toList();
+                  } else {
+                    items = box.values.where(
+                      (task) => task.name.contains(controller.text),
+                    ).toList();
+                  }
+                  if (items.isNotEmpty) {
                     return ListView.builder(
                       padding: EdgeInsets.fromLTRB(16, 16, 16, 100),
-                      itemCount: box.values.length +1,
+                      itemCount: items.length + 1,
                       itemBuilder: (context, index) {
                         // final TaskEntity task = box.values.toList()[index];
                         if (index == 0) {
@@ -163,13 +181,14 @@ class HomeScreen extends StatelessWidget {
                           );
                         } else {
                           final TaskEntity task =
-                              box.values.toList()[index -1];
+                              items[index -1];
                           return TaskItem(task: task);
                         }
                       },
                     );
-                  }else{return EmptyState();}
-                  
+                  } else {
+                    return EmptyState();
+                  }
                 },
               ),
             ),
@@ -184,13 +203,15 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-class EmptyState extends StatelessWidget{
+class EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-
-    return Container(child: Image.asset('assets/notask.png',),);
+    return Container(
+      child: Image.asset(
+        'assets/notask.png',
+      ),
+    );
   }
-
 }
 
 // ===============      start task item     ==================
