@@ -4,17 +4,15 @@ import 'data.dart';
 import 'EditPage.dart';
 import 'main.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class HomeScreen extends StatelessWidget {
+  HomeScreen({super.key});
 
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
+  TextEditingController controller = TextEditingController();
+  final ValueNotifier <String> searchKeywordNotifier = ValueNotifier('');
 
-class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
-    TextEditingController controller = TextEditingController();
+    
     final box = Hive.box<TaskEntity>(taskBoxName);
     final myThemeData = Theme.of(context);
     return Scaffold(
@@ -90,10 +88,12 @@ class _HomeScreenState extends State<HomeScreen> {
                           color: myThemeData.colorScheme.onPrimary,
                           borderRadius: BorderRadiusDirectional.circular(19)),
                       child: TextField(
-                        onChanged: (value) {
-                          setState(() {});
-                        },
                         controller: controller,
+                        onChanged: (value) {
+                          searchKeywordNotifier.value=controller.text;
+                        },
+                        
+                        
                         decoration: InputDecoration(
                           hintText: 'Search tasks ...',
                           prefixIcon: Icon(
@@ -116,80 +116,89 @@ class _HomeScreenState extends State<HomeScreen> {
 // ===============    start app body  ===================
 
             Expanded(
-              child: ValueListenableBuilder<Box<TaskEntity>>(
-                valueListenable: box.listenable(),
-                builder: (context, box, child) {
-                  final items;
-                  if (controller.text.isEmpty) {
-                    items = box.values.toList();
-                  } else {
-                    items = box.values.where(
-                      (task) => task.name.contains(controller.text),
-                    ).toList();
-                  }
-                  if (items.isNotEmpty) {
-                    return ListView.builder(
-                      padding: EdgeInsets.fromLTRB(16, 16, 16, 100),
-                      itemCount: items.length + 1,
-                      itemBuilder: (context, index) {
-                        // final TaskEntity task = box.values.toList()[index];
-                        if (index == 0) {
-                          return Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Today',
-                                    style: myThemeData.textTheme.titleMedium,
-                                  ),
-                                  Container(
-                                    margin: EdgeInsets.only(top: 4),
-                                    height: 3,
-                                    width: 67,
-                                    decoration: BoxDecoration(
-                                        color: myThemeData.colorScheme.primary,
-                                        borderRadius:
-                                            BorderRadius.circular(1.5)),
-                                  )
-                                ],
-                              ),
-                              MaterialButton(
-                                color: Color(0xffEAEFF5),
-                                textColor: secondaryTextColor,
-                                elevation: 0,
-                                onPressed: () {
-                                  box.clear();
-                                },
-                                child: Row(
+              child: ValueListenableBuilder(
+                valueListenable: searchKeywordNotifier,
+                builder: (context, value, child) {
+                  
+                
+                return ValueListenableBuilder<Box<TaskEntity>>(
+                  valueListenable: box.listenable(),
+                  builder: (context, box, child) {
+                    final items;
+                    if (controller.text.isEmpty) {
+                      items = box.values.toList();
+                      
+                    } else {
+                      items = box.values.where(
+                        (task) => task.name.contains(controller.text),
+                        
+                      ).toList();
+                      print (controller);
+                    }
+                    if (items.isNotEmpty) {
+                      return ListView.builder(
+                        padding: EdgeInsets.fromLTRB(16, 16, 16, 100),
+                        itemCount: items.length + 1,
+                        itemBuilder: (context, index) {
+                          // final TaskEntity task = box.values.toList()[index];
+                          if (index == 0) {
+                            return Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'Delee All',
+                                      'Today',
+                                      style: myThemeData.textTheme.titleMedium,
                                     ),
-                                    SizedBox(
-                                      width: 2,
-                                    ),
-                                    Icon(
-                                      Icons.delete,
-                                      size: 18,
+                                    Container(
+                                      margin: EdgeInsets.only(top: 4),
+                                      height: 3,
+                                      width: 67,
+                                      decoration: BoxDecoration(
+                                          color: myThemeData.colorScheme.primary,
+                                          borderRadius:
+                                              BorderRadius.circular(1.5)),
                                     )
                                   ],
                                 ),
-                              ),
-                            ],
-                          );
-                        } else {
-                          final TaskEntity task =
-                              items[index -1];
-                          return TaskItem(task: task);
-                        }
-                      },
-                    );
-                  } else {
-                    return EmptyState();
-                  }
-                },
+                                MaterialButton(
+                                  color: Color(0xffEAEFF5),
+                                  textColor: secondaryTextColor,
+                                  elevation: 0,
+                                  onPressed: () {
+                                    box.clear();
+                                  },
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        'Delee All',
+                                      ),
+                                      SizedBox(
+                                        width: 2,
+                                      ),
+                                      Icon(
+                                        Icons.delete,
+                                        size: 18,
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            );
+                          } else {
+                            final TaskEntity task =
+                                items[index -1];
+                            return TaskItem(task: task);
+                          }
+                        },
+                      );
+                    } else {
+                      return EmptyState();
+                    }
+                  },
+                );},
               ),
             ),
 
