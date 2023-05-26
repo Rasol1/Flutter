@@ -47,21 +47,23 @@ class MyApp extends StatelessWidget {
         prefixIconColor: secondaryTextColor,
       ),
       textTheme: TextTheme(
-        titleLarge: GoogleFonts.poppins(
-          color: ColorScheme.light().onPrimary,
-        ),
-        titleMedium: GoogleFonts.poppins(
-          color: ColorScheme.light().onSecondary,
-          fontWeight: FontWeight.bold,
-          fontSize: 18,
-        ),
-        bodyMedium: GoogleFonts.poppins(
-          color: primaryTextColor,
-          fontSize: 15,
-          fontWeight: FontWeight.w400,
-          
-        ),
-      ),
+          titleLarge: GoogleFonts.poppins(
+            color: ColorScheme.light().onPrimary,
+          ),
+          titleMedium: GoogleFonts.poppins(
+            color: ColorScheme.light().onSecondary,
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
+          bodyMedium: GoogleFonts.poppins(
+            color: primaryTextColor,
+            fontSize: 15,
+            fontWeight: FontWeight.w400,
+          ),
+          displayLarge: GoogleFonts.poppins(
+              color: secondaryTextColor,
+              fontSize: 28,
+              fontWeight: FontWeight.w900)),
 
       colorScheme: ColorScheme.light(
         primary: primaryColor,

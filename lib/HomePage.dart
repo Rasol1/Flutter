@@ -8,11 +8,10 @@ class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
 
   TextEditingController controller = TextEditingController();
-  final ValueNotifier <String> searchKeywordNotifier = ValueNotifier('');
+  final ValueNotifier<String> searchKeywordNotifier = ValueNotifier('');
 
   @override
   Widget build(BuildContext context) {
-    
     final box = Hive.box<TaskEntity>(taskBoxName);
     final myThemeData = Theme.of(context);
     return Scaffold(
@@ -90,10 +89,8 @@ class HomeScreen extends StatelessWidget {
                       child: TextField(
                         controller: controller,
                         onChanged: (value) {
-                          searchKeywordNotifier.value=controller.text;
+                          searchKeywordNotifier.value = controller.text;
                         },
-                        
-                        
                         decoration: InputDecoration(
                           hintText: 'Search tasks ...',
                           prefixIcon: Icon(
@@ -119,86 +116,88 @@ class HomeScreen extends StatelessWidget {
               child: ValueListenableBuilder(
                 valueListenable: searchKeywordNotifier,
                 builder: (context, value, child) {
-                  
-                
-                return ValueListenableBuilder<Box<TaskEntity>>(
-                  valueListenable: box.listenable(),
-                  builder: (context, box, child) {
-                    final items;
-                    if (controller.text.isEmpty) {
-                      items = box.values.toList();
-                      
-                    } else {
-                      items = box.values.where(
-                        (task) => task.name.contains(controller.text),
-                        
-                      ).toList();
-                      print (controller);
-                    }
-                    if (items.isNotEmpty) {
-                      return ListView.builder(
-                        padding: EdgeInsets.fromLTRB(16, 16, 16, 100),
-                        itemCount: items.length + 1,
-                        itemBuilder: (context, index) {
-                          // final TaskEntity task = box.values.toList()[index];
-                          if (index == 0) {
-                            return Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Today',
-                                      style: myThemeData.textTheme.titleMedium,
-                                    ),
-                                    Container(
-                                      margin: EdgeInsets.only(top: 4),
-                                      height: 3,
-                                      width: 67,
-                                      decoration: BoxDecoration(
-                                          color: myThemeData.colorScheme.primary,
-                                          borderRadius:
-                                              BorderRadius.circular(1.5)),
-                                    )
-                                  ],
-                                ),
-                                MaterialButton(
-                                  color: Color(0xffEAEFF5),
-                                  textColor: secondaryTextColor,
-                                  elevation: 0,
-                                  onPressed: () {
-                                    box.clear();
-                                  },
-                                  child: Row(
+                  return ValueListenableBuilder<Box<TaskEntity>>(
+                    valueListenable: box.listenable(),
+                    builder: (context, box, child) {
+                      final items;
+                      if (controller.text.isEmpty) {
+                        items = box.values.toList();
+                      } else {
+                        items = box.values
+                            .where(
+                              (task) => task.name.contains(controller.text),
+                            )
+                            .toList();
+                        print(controller);
+                      }
+                      if (items.isNotEmpty) {
+                        return ListView.builder(
+                          padding: EdgeInsets.fromLTRB(16, 16, 16, 100),
+                          itemCount: items.length + 1,
+                          itemBuilder: (context, index) {
+                            // final TaskEntity task = box.values.toList()[index];
+                            if (index == 0) {
+                              return Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        'Delee All',
+                                        'Today',
+                                        style:
+                                            myThemeData.textTheme.titleMedium,
                                       ),
-                                      SizedBox(
-                                        width: 2,
-                                      ),
-                                      Icon(
-                                        Icons.delete,
-                                        size: 18,
+                                      Container(
+                                        margin: EdgeInsets.only(top: 4),
+                                        height: 3,
+                                        width: 67,
+                                        decoration: BoxDecoration(
+                                            color:
+                                                myThemeData.colorScheme.primary,
+                                            borderRadius:
+                                                BorderRadius.circular(1.5)),
                                       )
                                     ],
                                   ),
-                                ),
-                              ],
-                            );
-                          } else {
-                            final TaskEntity task =
-                                items[index -1];
-                            return TaskItem(task: task);
-                          }
-                        },
-                      );
-                    } else {
-                      return EmptyState();
-                    }
-                  },
-                );},
+                                  MaterialButton(
+                                    color: Color(0xffEAEFF5),
+                                    textColor: secondaryTextColor,
+                                    elevation: 0,
+                                    onPressed: () {
+                                      box.clear();
+                                    },
+                                    child: Row(
+                                      children: [
+                                        Text(
+                                          'Delee All',
+                                        ),
+                                        SizedBox(
+                                          width: 2,
+                                        ),
+                                        Icon(
+                                          Icons.delete,
+                                          size: 18,
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              );
+                            } else {
+                              final TaskEntity task = items[index - 1];
+                              return TaskItem(task: task);
+                            }
+                          },
+                        );
+                      } else {
+                        return EmptyState();
+                      }
+                    },
+                  );
+                },
               ),
             ),
 
@@ -215,11 +214,19 @@ class HomeScreen extends StatelessWidget {
 class EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Image.asset(
-        'assets/notask.png',
+    final myThemeData = Theme.of(context);
+    return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+      Image.asset(
+        'assets/no-task.png',
+        color: secondaryTextColor,
+        width:180,
       ),
-    );
+      SizedBox(height: 24,),
+      Text(
+        'No  Task',
+        style: myThemeData.textTheme.displayLarge,
+      )
+    ]);
   }
 }
 
